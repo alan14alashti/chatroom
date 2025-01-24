@@ -1,9 +1,11 @@
 package websocket
 
 import (
+	"encoding/json"
 	"log/slog"
 	"net/http"
 	"chatroom/internal/auth"
+	"chatroom/internal/database"
 
 	"github.com/gorilla/websocket"
 )
@@ -12,7 +14,12 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-// HandleConnections handles WebSocket connections
+type MessagePayload struct {
+	ReceiverID uint   `json:"receiver_id"` // 0 for public messages
+	Content    string `json:"content"`
+}
+
+// HandleConnections manages WebSocket connections with JWT authentication
 func HandleConnections(manager *ClientManager, w http.ResponseWriter, r *http.Request) {
 	tokenString := r.URL.Query().Get("token")
 	userID, err := auth.ValidateJWT(tokenString)
@@ -40,6 +47,26 @@ func HandleConnections(manager *ClientManager, w http.ResponseWriter, r *http.Re
 			break
 		}
 
-		slog.Info("Message received", "user_id", userID, "message", string(msg))
+		// Parse the received message
+		var payload MessagePayload
+		if err := json.Unmarshal(msg, &payload); err != nil {
+			slog.Error("Invalid message format", "error", err)
+			continue
+		}
+
+		// Store message in the database
+		if err := database.SaveMessage(userID, payload.ReceiverID, payload.Content); err != nil {
+			slog.Error("Failed to save message", "error", err)
+			continue
+		}
+
+		// Send the message to the appropriate user(s)
+		if payload.ReceiverID == 0 {
+			// Broadcast to all users
+			manager.Broadcast(msg)
+		} else {
+			// Send private message
+			manager.SendPrivateMessage(payload.ReceiverID, msg)
+		}
 	}
 }
