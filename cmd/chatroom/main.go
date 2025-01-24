@@ -8,7 +8,7 @@ import (
 	"chatroom/config"
 	"chatroom/internal/api"
 	"chatroom/internal/database"
-	// "chatroom/internal/middleware"
+	"chatroom/internal/middleware"
 	"chatroom/internal/websocket"
 	"chatroom/pkg/logger"
 	"syscall"

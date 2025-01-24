@@ -11,6 +11,12 @@ type ClientManager struct {
 	mu      sync.Mutex
 }
 
+func NewClientManager() *ClientManager {
+	return &ClientManager{
+		clients: make(map[uint]*websocket.Conn),
+	}
+}
+
 func (cm *ClientManager) Register(userID uint, conn *websocket.Conn) {
 	cm.mu.Lock()
 	defer cm.mu.Unlock()
