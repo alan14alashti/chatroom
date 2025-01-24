@@ -2,7 +2,9 @@ package database
 
 import (
 	"errors"
-	"snapp_quera_task/pkg/models"
+	"chatroom/pkg/models"
+
+	"gorm.io/gorm"
 )
 
 // CreateUser adds a new user
@@ -15,24 +17,42 @@ func GetUserByID(id uint) (*models.User, error) {
 	var user models.User
 	err := DB.First(&user, id).Error
 	if err != nil {
-		return nil, errors.New("user not found")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
 	}
 	return &user, nil
 }
 
-// GetAllUsers returns all users
+// GetUserByEmail fetches a user by email (needed for login)
+func GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	err := DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetAllUsers returns all users (excluding soft-deleted)
 func GetAllUsers() ([]models.User, error) {
 	var users []models.User
 	err := DB.Find(&users).Error
 	return users, err
 }
 
-// UpdateUser updates user details
-func UpdateUser(user *models.User) error {
-	return DB.Save(user).Error
+// UpdateUser updates only provided fields
+func UpdateUser(id uint, updates map[string]interface{}) error {
+	err := DB.Model(&models.User{}).Where("id = ?", id).Updates(updates).Error
+	return err
 }
 
-// DeleteUser removes a user
+// DeleteUser performs a soft delete
 func DeleteUser(id uint) error {
-	return DB.Delete(&models.User{}, id).Error
+	err := DB.Delete(&models.User{}, id).Error
+	return err
 }

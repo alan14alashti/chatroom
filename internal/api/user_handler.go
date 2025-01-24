@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"snapp_quera_task/internal/auth"
-	"snapp_quera_task/internal/database"
-	"snapp_quera_task/pkg/models"
+	"chatroom/internal/auth"
+	"chatroom/internal/database"
+	"chatroom/pkg/models"
 	"strconv"
 )
 

@@ -2,7 +2,7 @@ package database
 
 import (
 	"log"
-	"snapp_quera_task/pkg/models"
+	"chatroom/pkg/models"
 )
 
 func RunMigrations() {

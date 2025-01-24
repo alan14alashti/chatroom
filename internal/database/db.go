@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"snapp_quera_task/config"
+	"chatroom/config"
 )
 
 var DB *gorm.DB

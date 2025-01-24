@@ -26,8 +26,8 @@ func LoadConfig() *Config {
 		PostgresHost:     getEnv("POSTGRES_HOST", "localhost"),
 		PostgresUser:     getEnv("POSTGRES_USER", "user"),
 		PostgresPassword: getEnv("POSTGRES_PASSWORD", "password"),
-		PostgresDB:       getEnv("POSTGRES_DB", "snapp_quera_db"),
-		PostgresPort:     getEnv("POSTGRES_PORT", "5432"),
+		PostgresDB:       getEnv("POSTGRES_DB", "chatroom"),
+		PostgresPort:     getEnv("POSTGRES_PORT", "5422"),
 		ServerPort:       getEnv("SERVER_PORT", "8080"),
 	}
 }
