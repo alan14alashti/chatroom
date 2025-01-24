@@ -34,3 +34,11 @@ func GetPrivateMessages(userID1, userID2 uint) ([]models.Message, error) {
 
 	return messages, nil
 }
+
+// GetChatHistory retrieves chat messages for a user
+func GetChatHistory(userID uint) ([]models.Message, error) {
+	var messages []models.Message
+	err := DB.Where("sender_id = ? OR receiver_id = ?", userID, userID).
+		Order("created_at ASC").Find(&messages).Error
+	return messages, err
+}

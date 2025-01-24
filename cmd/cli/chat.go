@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"log"
 	"net/url"
+	"net/http"
 	"github.com/gorilla/websocket"
 )
 
@@ -57,5 +59,48 @@ func readMessages(conn *websocket.Conn) {
 		}
 		fmt.Println("\n📩 New message:", string(message))
 		fmt.Print("> ")
+	}
+}
+
+// GetOnlineUsers fetches the list of online users
+func GetOnlineUsers() {
+	resp, err := http.Get("http://localhost:8080/online-users")
+	if err != nil {
+		fmt.Println("❌ Error fetching online users:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	var users []uint
+	json.NewDecoder(resp.Body).Decode(&users)
+	fmt.Println("👥 Online Users:", users)
+}
+
+// GetChatHistory fetches the user's chat history
+func GetChatHistory() {
+	tokenBytes, err := os.ReadFile("token.txt")
+	if err != nil {
+		fmt.Println("❌ Please log in first.")
+		return
+	}
+	token := string(tokenBytes)
+
+	req, _ := http.NewRequest("GET", "http://localhost:8080/chat-history", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("❌ Error fetching chat history:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	var messages []map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&messages)
+
+	fmt.Println("📜 Chat History:")
+	for _, msg := range messages {
+		fmt.Printf("📩 [%v] %v -> %v: %v\n", msg["created_at"], msg["sender_id"], msg["receiver_id"], msg["content"])
 	}
 }

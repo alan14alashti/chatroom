@@ -45,6 +45,7 @@ func main() {
 	mux.HandleFunc("/user", middleware.JWTMiddleware(api.GetUserHandler))
 	mux.HandleFunc("/users", middleware.JWTMiddleware(api.GetAllUsersHandler))
 	mux.HandleFunc("/delete-user", middleware.JWTMiddleware(api.DeleteUserHandler))
+	mux.HandleFunc("/online-users", api.GetOnlineUsersHandler(wsManager))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.ServerPort,

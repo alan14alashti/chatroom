@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"chatroom/internal/auth"
 	"chatroom/internal/database"
+	"chatroom/internal/websocket"
 	"chatroom/pkg/models"
 	"strconv"
 )
@@ -125,4 +126,13 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// GetOnlineUsersHandler returns a list of online users
+func GetOnlineUsersHandler(manager *websocket.ClientManager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		users := manager.GetOnlineUsers()
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(users)
+	}
 }
