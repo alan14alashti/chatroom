@@ -30,6 +30,7 @@ Builds & runs the Go application
 4️⃣ Use the CLI for Chat
 
 go run cmd/cli/main.go
+
 💡 Features
 👤 User Authentication
 Register a new user (/register)
@@ -46,11 +47,12 @@ Fetch previous messages (/chat-history)
 📦 Fully Dockerized
 PostgreSQL & Go services run in Docker containers
 Uses docker-compose for easy deployment
+
 🚀 Usage Examples
 🔹 Register a User
 
 curl -X POST http://localhost:8080/register \
-     -d '{"name":"Alice","email":"alice@example.com","password":"123"}' \
+     -d '{"name":"alan","email":"alan14alashti@gamil.com","password":"123456"}' \
      -H "Content-Type: application/json"
 🔹 Login & Get JWT Token
 
